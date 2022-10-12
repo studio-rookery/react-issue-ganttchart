@@ -30,21 +30,18 @@ export const getGitLabIssuesFromAPI = async (
   selected_labels,
   assignee
 ) => {
-  return axios
-    .get(getGitLabAPIURLIssueFilterd(git_url, token, selected_labels, assignee))
-    .then((res) => {
-      let data = [];
-      res.data.map((issue_info) => {
-        const gantt_task = generateGanttTaskFromGitLab(issue_info);
-
-        data.push(gantt_task);
-      });
-      return data;
-    })
-    .catch((err) => {
-      console.error(err);
-      return Promise.reject(err);
-    });
+  return Promise.all([
+    axios.get(getGitLabAPIURLIssueFilterd(git_url, token, selected_labels, assignee, 1)),
+    axios.get(getGitLabAPIURLIssueFilterd(git_url, token, selected_labels, assignee, 2)),
+    axios.get(getGitLabAPIURLIssueFilterd(git_url, token, selected_labels, assignee, 3)),
+  ])
+  .then((resList) => {
+    return resList.flatMap(res => res.data.map(generateGanttTaskFromGitLab))
+  })
+  .catch((err) => {
+    console.error(err);
+    return Promise.reject(err);
+  });
 };
 
 export const setGitLabLabelListOfRepoFromAPI = async (git_url, token) => {
