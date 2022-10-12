@@ -23,7 +23,7 @@ export const getSelfHostingGitLabDomain = (git_url) => {
     return null;
   }
   const split_git_url = git_url.split('/');
-  if (split_git_url.length >= 5) {
+  if (split_git_url.length >= 3) {
     return split_git_url[2];
   }
   return null;
@@ -60,7 +60,7 @@ export const getGitLabNameSpaceFromGitURL = (git_url) => {
     return null;
   }
   const split_git_url = git_url.split('/');
-  if (split_git_url.length >= 5) {
+  if (split_git_url.length >= 4) {
     return split_git_url[3];
   }
   return null;
@@ -92,7 +92,8 @@ export const getGitLabAPIURLIssueFilterd = (
   git_url,
   token,
   labels,
-  assignee
+  assignee,
+  page
 ) => {
   if (!isValidURL(git_url)) {
     return null;
@@ -122,36 +123,23 @@ export const getGitLabAPIURLIssueFilterd = (
     }
   }
   post_fix_str += '&per_page=100';
+  post_fix_str += '&page=' + page;
   return (
     getGitLabAPIURL(git_url) +
-    'projects/' +
+    'groups/' +
     getGitLabNameSpaceFromGitURL(git_url) +
-    '%2F' +
-    getGitLabProjectFromGitURL(git_url) +
     '/issues' +
     post_fix_str
   );
 };
 
-export const getGitabAPIURLIssuebyNumber = (git_url, token, number) => {
-  if (!isValidURL(git_url)) {
-    return null;
-  }
+export const getGitabAPIURLIssuebyNumber = (token, gantt_task) => {
   if (!isValidVariable(token)) {
-    return null;
-  }
-  if (!isValidVariable(number)) {
     return null;
   }
   const post_fix_str = postFixToken(token);
   return (
-    getGitLabAPIURL(git_url) +
-    'projects/' +
-    getGitLabNameSpaceFromGitURL(git_url) +
-    '%2F' +
-    getGitLabProjectFromGitURL(git_url) +
-    '/issues/' +
-    number +
+    gantt_task.self_link +
     post_fix_str
   );
 };
@@ -165,10 +153,8 @@ export const getGitLabAPIURLLabel = (git_url, token) => {
 
   return (
     getGitLabAPIURL(git_url) +
-    'projects/' +
+    'groups/' +
     getGitLabNameSpaceFromGitURL(git_url) +
-    '%2F' +
-    getGitLabProjectFromGitURL(git_url) +
     '/labels' +
     post_fix_str
   );

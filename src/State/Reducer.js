@@ -94,7 +94,7 @@ export const reducerFunc = (state, action) => {
 };
 
 export const handleOpenIssueAtBrowser = (state, action) => {
-  openIssueAtBrowser(action.value, state.git_url);
+  openIssueAtBrowser(action.value, state.git_url, state);
   return state;
 };
 

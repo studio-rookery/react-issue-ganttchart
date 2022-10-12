@@ -83,7 +83,7 @@ export const updateIssueByAPI = (gantt_task, token, gantt, git_url) => {
   }
 };
 
-export const openIssueAtBrowser = (gantt_task_id, git_url) => {
+export const openIssueAtBrowser = (gantt_task_id, git_url, state) => {
   if (!isValidURL(git_url)) {
     return Promise.resolve();
   } else if (isGitHubURL(git_url)) {
@@ -92,7 +92,7 @@ export const openIssueAtBrowser = (gantt_task_id, git_url) => {
     isGitLabURL(git_url) ||
     getSelfHostingGitLabDomain(git_url) !== null
   ) {
-    openGitLabIssueAtBrowser(gantt_task_id, git_url);
+    openGitLabIssueAtBrowser(gantt_task_id, git_url, state.issue);
   }
 };
 
