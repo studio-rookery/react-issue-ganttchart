@@ -36,7 +36,7 @@ export const generateGanttTaskFromGitLab = (issue_info) => {
   
   const due_date = adjustDateString(issue_info.due_date);
   const gantt_task = {
-    id: '#' + issue_info.iid,
+    id: '#' + issue_info.id,
     text: issue_info.title,
     start_date: getGanttStartDate(start_date, due_date, issue_info.created_at),
     due_date: getGanttDueDate(start_date, due_date, issue_info.created_at),
@@ -45,6 +45,8 @@ export const generateGanttTaskFromGitLab = (issue_info) => {
     assignee: getGitLabAssignee(issue_info),
     description: issue_info.description,
     update: getGanttUpdateDate(issue_info.created_at, issue_info.updated_at),
+    web_url: issue_info.web_url,
+    self_link: issue_info._links.self
   };
   console.log(gantt_task)
   let parent = getNumberFromDescriptionYaml(issue_info.description, 'parent');

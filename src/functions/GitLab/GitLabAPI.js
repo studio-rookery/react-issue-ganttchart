@@ -30,21 +30,18 @@ export const getGitLabIssuesFromAPI = async (
   selected_labels,
   assignee
 ) => {
-  return axios
-    .get(getGitLabAPIURLIssueFilterd(git_url, token, selected_labels, assignee))
-    .then((res) => {
-      let data = [];
-      res.data.map((issue_info) => {
-        const gantt_task = generateGanttTaskFromGitLab(issue_info);
-
-        data.push(gantt_task);
-      });
-      return data;
-    })
-    .catch((err) => {
-      console.error(err);
-      return Promise.reject(err);
-    });
+  return Promise.all([
+    axios.get(getGitLabAPIURLIssueFilterd(git_url, token, selected_labels, assignee, 1)),
+    axios.get(getGitLabAPIURLIssueFilterd(git_url, token, selected_labels, assignee, 2)),
+    axios.get(getGitLabAPIURLIssueFilterd(git_url, token, selected_labels, assignee, 3)),
+  ])
+  .then((resList) => {
+    return resList.flatMap(res => res.data.map(generateGanttTaskFromGitLab))
+  })
+  .catch((err) => {
+    console.error(err);
+    return Promise.reject(err);
+  });
 };
 
 export const setGitLabLabelListOfRepoFromAPI = async (git_url, token) => {
@@ -89,17 +86,16 @@ export const updateGitLabIssueFromGanttTask = (
 ) => {
   return axios
     .get(
-      getGitabAPIURLIssuebyNumber(
-        git_url,
+      getGitabAPIURLIssuebyNumber(        
         token,
-        removeFirstSharp(gantt_task.id)
+        gantt_task
       )
     )
     .then((res) => {
       const issue_info = res.data;
       if (contentcheck(Arrangegantt(gantt_task),generateGanttTaskFromGitLab(issue_info))!=true) {
         if (
-          parseInt(issue_info.iid) === parseInt(removeFirstSharp(gantt_task.id))
+          parseInt(issue_info.id) === parseInt(removeFirstSharp(gantt_task.id))
         ) {
           let description = updateGitLabDescriptionStringFromGanttTask(
             issue_info.description,
@@ -118,10 +114,9 @@ export const updateGitLabIssueFromGanttTask = (
               gantt_task.duration
             );
             const put_url =
-              getGitabAPIURLIssuebyNumber(
-                git_url,
+              getGitabAPIURLIssuebyNumber(        
                 token,
-                removeFirstSharp(gantt_task.id)
+                gantt_task
               ) +
               '&description=' +
               description +
@@ -150,9 +145,11 @@ export const updateGitLabIssueFromGanttTask = (
     });
 };
 
-export const openGitLabIssueAtBrowser = (id, git_url) => {
+export const openGitLabIssueAtBrowser = (id, git_url, issues) => {
+  const issue = issues.find(e => e.id == id);
+  console.log(issue);
   window.open(
-    getGitLabURLIssuebyNumber(git_url, removeFirstSharp(id)),
+    issue.web_url,
     '_blank'
   );
 };
