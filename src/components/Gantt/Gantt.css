@@ -1,9 +1,6 @@
 .gantt-container {
   height: calc(100vh - 50px);
 }
-.past_days {
-  background: #8b8b8b13;
-}
 .today {
   background: #60daffa6;
 }
