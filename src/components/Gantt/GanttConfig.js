@@ -88,5 +88,5 @@ export const setGanttConfig = (gantt) => {
   gantt.showDate(new Date());
   gantt.ext.zoom.init(zoom_level);
   gantt.config.start_date = new Date(2022, 8, 1);
-  gantt.config.end_date = new Date(2023, 4, 1);
+  gantt.config.end_date = new Date(2023, , 1);
 };
